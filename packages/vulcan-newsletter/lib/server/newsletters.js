@@ -46,8 +46,8 @@ Newsletters.subscribeUser = async (user, confirm = false) => {
   console.log(`// Adding ${email} to ${provider} list…`);
   const result = Newsletters[provider].subscribe(email, confirm);
   // eslint-disable-next-line no-console
-  if (result) {console.log ('-> added');}
-  await Connectors.update(Users, user._id, {$set: {newsletter_subscribeToNewsletter: true}});
+  if (result) { console.log('-> added'); }
+  await Connectors.update(Users, user._id, { $set: { newsletter_subscribeToNewsletter: true } });
 };
 
 /**
@@ -59,7 +59,7 @@ Newsletters.subscribeEmail = (email, confirm = false) => {
   console.log(`// Adding ${email} to ${provider} list…`);
   const result = Newsletters[provider].subscribe(email, confirm);
   // eslint-disable-next-line no-console
-  if (result) {console.log ('-> added');}
+  if (result) { console.log('-> added'); }
 };
 
 
@@ -74,9 +74,9 @@ Newsletters.unsubscribeUser = async (user) => {
   }
 
   // eslint-disable-next-line no-console
-  console.log('// Removing "'+email+'" from list…');
+  console.log('// Removing "' + email + '" from list…');
   Newsletters[provider].unsubscribe(email);
-  await Connectors.update(Users, user._id, {$set: {newsletter_subscribeToNewsletter: false}}); 
+  await Connectors.update(Users, user._id, { $set: { newsletter_subscribeToNewsletter: false } });
 };
 
 /**
@@ -85,7 +85,7 @@ Newsletters.unsubscribeUser = async (user) => {
  */
 Newsletters.unsubscribeEmail = (email) => {
   // eslint-disable-next-line no-console
-  console.log('// Removing "'+email+'" from list…');
+  console.log('// Removing "' + email + '" from list…');
   Newsletters[provider].unsubscribe(email);
 };
 
@@ -110,7 +110,7 @@ Newsletters.getSubject = posts => {
 
 //   // 1. Iterate through posts and pass each of them through a handlebars template
 //   posts.forEach(function (post, index) {
-    
+
 //     // get author of the current post
 //     var postUser = Users.findOne(post.userId);
 
@@ -228,7 +228,7 @@ Newsletters.getNext = () => {
  * @summary Get the last sent newsletter
  */
 Newsletters.getLast = () => {
-  return Newsletters.findOne({}, {sort: {createdAt: -1}});
+  return Newsletters.findOne({}, { sort: { createdAt: -1 } });
 };
 
 /**
@@ -238,16 +238,16 @@ Newsletters.getLast = () => {
 Newsletters.send = async (isTest = false) => {
 
   const newsletterEmail = VulcanEmail.emails.newsletter;
-  const email = await VulcanEmail.build({ emailName: 'newsletter', variables: {terms: {view: 'newsletter'}}});
+  const email = await VulcanEmail.build({ emailName: 'newsletter', variables: { terms: { view: 'newsletter' } } });
   const { subject, html, data } = email;
   const text = VulcanEmail.generateTextVersion(html);
 
-  if(newsletterEmail.isValid(data)){
+  if (newsletterEmail.isValid(data)) {
 
     // eslint-disable-next-line no-console
     console.log('// Sending newsletter…');
     // eslint-disable-next-line no-console
-    console.log('// Subject: '+subject);
+    console.log('// Subject: ' + subject);
 
     const newsletter = Newsletters[provider].send({ subject, text, html, isTest });
 
@@ -281,12 +281,12 @@ Newsletters.send = async (isTest = false) => {
 
     // eslint-disable-next-line no-console
     console.log('No newsletter to schedule today…');
-  
+
   }
 };
 
 Meteor.startup(() => {
-  if(!Newsletters[provider]) {
+  if (!Newsletters[provider]) {
     // eslint-disable-next-line no-console
     console.log(`// Warning: please configure your settings for ${provider} support, or else disable the vulcan:newsletter package.`);
   }

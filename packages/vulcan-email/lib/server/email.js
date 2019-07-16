@@ -11,7 +11,7 @@ import { Email } from 'meteor/email';
 Get intl string. Usage: {{__ "posts.create"}}
 
 */
-Handlebars.registerHelper('__', function(id, context) {
+Handlebars.registerHelper('__', function (id, context) {
   const s = getString({ id, locale: context.data.root.locale });
   return new Handlebars.SafeString(s);
 });
@@ -21,7 +21,7 @@ Handlebars.registerHelper('__', function(id, context) {
 Get intl string, accepts a second variables argument. Usage: {{__ "posts.create" postVariables}}
 
 */
-Handlebars.registerHelper('___', function(id, variables, context) {
+Handlebars.registerHelper('___', function (id, variables, context) {
   const s = getString({ id, variables, locale: context.data.root.locale });
   return new Handlebars.SafeString(s);
 });
@@ -116,13 +116,15 @@ VulcanEmail.send = (to, subject, html, text, throwErrors, cc, bcc, replyTo, head
 
   const shouldSendEmail = process.env.NODE_ENV === 'production' || getSetting('enableDevelopmentEmails', false);
 
-  console.log(`//////// sending email${shouldSendEmail ? '' : ' (simulation)'}…`); // eslint-disable-line
-  console.log('from: ' + from); // eslint-disable-line
-  console.log('to: ' + to); // eslint-disable-line
-  console.log('cc: ' + cc); // eslint-disable-line
-  console.log('bcc: ' + bcc); // eslint-disable-line
-  console.log('replyTo: ' + replyTo); // eslint-disable-line
-  console.log('headers: ' + JSON.stringify(headers)); // eslint-disable-line
+  if (!Meteor.isTest) {
+    console.log(`//////// sending email${shouldSendEmail ? '' : ' (simulation)'}…`); // eslint-disable-line
+    console.log('from: ' + from); // eslint-disable-line
+    console.log('to: ' + to); // eslint-disable-line
+    console.log('cc: ' + cc); // eslint-disable-line
+    console.log('bcc: ' + bcc); // eslint-disable-line
+    console.log('replyTo: ' + replyTo); // eslint-disable-line
+    console.log('headers: ' + JSON.stringify(headers)); // eslint-disable-line
+  }
 
   if (shouldSendEmail) {
     try {

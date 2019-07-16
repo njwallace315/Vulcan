@@ -37,6 +37,7 @@ htmljs@1.0.11
 http@1.4.1
 id-map@1.1.0
 inter-process-messaging@0.1.0
+littledata:synced-cron@1.5.1
 lmieulet:meteor-coverage@2.0.2
 localstorage@1.2.0
 logging@1.1.20
@@ -59,7 +60,6 @@ mongo-id@1.0.7
 npm-bcrypt@0.9.3
 npm-mongo@3.1.1
 ordered-dict@1.1.0
-percolatestudio:synced-cron@1.1.0
 promise@0.11.1
 random@1.1.0
 rate-limit@1.0.9
@@ -81,13 +81,13 @@ templating-tools@1.1.2
 tracker@1.2.0
 underscore@1.0.10
 url@1.2.0
-vulcan:core@1.12.8
-vulcan:debug@1.12.8
-vulcan:email@1.12.8
-vulcan:i18n@1.12.8
-vulcan:i18n-en-us@1.12.8
-vulcan:lib@1.12.8
-vulcan:routing@1.12.8
-vulcan:users@1.12.8
+vulcan:core@1.12.16
+vulcan:debug@1.12.16
+vulcan:email@1.12.16
+vulcan:i18n@1.12.16
+vulcan:i18n-en-us@1.12.16
+vulcan:lib@1.12.16
+vulcan:routing@1.12.16
+vulcan:users@1.12.16
 webapp@1.7.0
 webapp-hashing@1.0.9

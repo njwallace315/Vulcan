@@ -7,7 +7,7 @@ export const DatabaseConnectors = {};
 
 export let Connectors = {};
 
-function initializeConnectors () {
+function initializeConnectors() {
   Connectors = DatabaseConnectors[database];
 }
 

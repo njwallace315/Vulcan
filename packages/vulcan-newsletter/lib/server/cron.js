@@ -19,7 +19,7 @@ SyncedCron.options = {
 };
 
 const addZero = num => {
-  return num < 10 ? '0'+num : num;
+  return num < 10 ? '0' + num : num;
 };
 
 var getSchedule = function (parser) {
@@ -60,11 +60,11 @@ Meteor.methods({
 var addJob = function () {
   SyncedCron.add({
     name: 'scheduleNewsletter',
-    schedule: function(parser) {
+    schedule: function (parser) {
       // parser is a later.parse object
       return getSchedule(parser);
     },
-    job: function() {
+    job: function () {
       // only schedule newsletter campaigns in production
       if (process.env.NODE_ENV === 'production' || getSetting('newsletter.enabledInDev', false)) {
         console.log("// Scheduling newsletter…"); // eslint-disable-line

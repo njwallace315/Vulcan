@@ -570,7 +570,7 @@ export const newMutator = createMutator;
 export const editMutator = updateMutator;
 export const removeMutator = deleteMutator;
 
-const startDebugMutator = (name, action, properties) => {
+const startDebugMutator = (name, action, properties = {}) => {
   debug('');
   debugGroup(`--------------- start \x1b[36m${name} ${action} Mutator\x1b[0m ---------------`);
   Object.keys(properties).forEach(p => {
@@ -578,7 +578,7 @@ const startDebugMutator = (name, action, properties) => {
   });
 };
 
-const endDebugMutator = (name, action, properties) => {
+const endDebugMutator = (name, action, properties = {}) => {
   Object.keys(properties).forEach(p => {
     debug(`// ${p}: `, properties[p]);
   });

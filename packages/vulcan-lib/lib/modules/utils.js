@@ -38,7 +38,7 @@ Utils.camelToDash = function (str) {
  * @param {String} str
  */
 Utils.camelToSpaces = function (str) {
-  return str.replace(/([A-Z])/g, ' $1').replace(/^./, function(str){ return str.toUpperCase(); });
+  return str.replace(/([A-Z])/g, ' $1').replace(/^./, function (str) { return str.toUpperCase(); });
 };
 
 /**
@@ -54,16 +54,16 @@ Utils.underscoreToDash = function (str) {
  * @param {String} str
  */
 Utils.dashToCamel = function (str) {
-  return str.replace(/(\-[a-z])/g, function($1){return $1.toUpperCase().replace('-','');});
+  return str.replace(/(\-[a-z])/g, function ($1) { return $1.toUpperCase().replace('-', ''); });
 };
 
 /**
  * @summary Convert a string to camelCase and remove spaces.
  * @param {String} str
  */
-Utils.camelCaseify = function(str) {
+Utils.camelCaseify = function (str) {
   str = this.dashToCamel(str.replace(' ', '-'));
-  str = str.slice(0,1).toLowerCase() + str.slice(1);
+  str = str.slice(0, 1).toLowerCase() + str.slice(1);
   return str;
 };
 
@@ -72,14 +72,14 @@ Utils.camelCaseify = function(str) {
  * @param {String} s - Sentence to trim.
  * @param {Number} numWords - Number of words to trim sentence to.
  */
-Utils.trimWords = function(s, numWords) {
+Utils.trimWords = function (s, numWords) {
 
   if (!s)
     return s;
 
-  var expString = s.split(/\s+/,numWords);
-  if(expString.length >= numWords)
-    return expString.join(' ')+'…';
+  var expString = s.split(/\s+/, numWords);
+  if (expString.length >= numWords)
+    return expString.join(' ') + '…';
   return s;
 };
 
@@ -96,37 +96,37 @@ Utils.trimHTML = function (html, numWords) {
  * @summary Capitalize a string.
  * @param {String} str
  */
-Utils.capitalize = function(str) {
+Utils.capitalize = function (str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-Utils.t = function(message) {
+Utils.t = function (message) {
   var d = new Date();
-  console.log("### "+message+" rendered at "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()); // eslint-disable-line
+  console.log("### " + message + " rendered at " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds()); // eslint-disable-line
 };
 
-Utils.nl2br = function(str) {
+Utils.nl2br = function (str) {
   var breakTag = '<br />';
-  return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');
+  return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
 };
 
-Utils.scrollPageTo = function(selector) {
+Utils.scrollPageTo = function (selector) {
   $('body').scrollTop($(selector).offset().top);
 };
 
 Utils.scrollIntoView = function (selector) {
   if (!document) return;
-  
+
   const element = document.querySelector(selector);
   if (element) {
     element.scrollIntoView();
   }
 };
 
-Utils.getDateRange = function(pageNumber) {
+Utils.getDateRange = function (pageNumber) {
   var now = moment(new Date());
-  var dayToDisplay=now.subtract(pageNumber-1, 'days');
-  var range={};
+  var dayToDisplay = now.subtract(pageNumber - 1, 'days');
+  var range = {};
   range.start = dayToDisplay.startOf('day').valueOf();
   range.end = dayToDisplay.endOf('day').valueOf();
   // console.log("after: ", dayToDisplay.startOf('day').format("dddd, MMMM Do YYYY, h:mm:ss a"));
@@ -174,12 +174,12 @@ Utils.getUnusedSlug = function (collection, slug) {
   let index = 0;
 
   // test if slug is already in use
-  while (!!collection.findOne({slug: slug+suffix})) {
+  while (!!collection.findOne({ slug: slug + suffix })) {
     index++;
-    suffix = '-'+index;
+    suffix = '-' + index;
   }
 
-  return slug+suffix;
+  return slug + suffix;
 };
 
 // Different version, less calls to the db but it cannot be used until we figure out how to use async for onCreate functions
@@ -203,11 +203,11 @@ Utils.getUnusedSlugByCollectionName = function (collectionName, slug) {
   return Utils.getUnusedSlug(getCollection(collectionName), slug);
 };
 
-Utils.getShortUrl = function(post) {
+Utils.getShortUrl = function (post) {
   return post.shortUrl || post.url;
 };
 
-Utils.getDomain = function(url) {
+Utils.getDomain = function (url) {
   try {
     return urlObject.parse(url).hostname.replace('www.', '');
   } catch (error) {
@@ -219,7 +219,7 @@ Utils.getDomain = function(url) {
 Utils.addHttp = function (url) {
   try {
     if (url.substring(0, 5) !== 'http:' && url.substring(0, 6) !== 'https:') {
-      url = 'http:'+url;
+      url = 'http:' + url;
     }
     return url;
   } catch (error) {
@@ -231,25 +231,25 @@ Utils.addHttp = function (url) {
 // String Helper Functions //
 /////////////////////////////
 
-Utils.cleanUp = function(s) {
+Utils.cleanUp = function (s) {
   return this.stripHTML(s);
 };
 
-Utils.sanitize = function(s) {
+Utils.sanitize = function (s) {
   return s;
 };
 
-Utils.stripHTML = function(s) {
+Utils.stripHTML = function (s) {
   return s.replace(/<(?:.|\n)*?>/gm, '');
 };
 
-Utils.stripMarkdown = function(s) {
+Utils.stripMarkdown = function (s) {
   var htmlBody = marked(s);
   return Utils.stripHTML(htmlBody);
 };
 
 // http://stackoverflow.com/questions/2631001/javascript-test-for-existence-of-nested-object-key
-Utils.checkNested = function(obj /*, level1, level2, ... levelN*/) {
+Utils.checkNested = function (obj /*, level1, level2, ... levelN*/) {
   var args = Array.prototype.slice.call(arguments);
   obj = args.shift();
 
@@ -263,7 +263,7 @@ Utils.checkNested = function(obj /*, level1, level2, ... levelN*/) {
 };
 
 Utils.log = function (s) {
-  if(getSetting('debug', false) || process.env.NODE_ENV === 'development') {
+  if (getSetting('debug', false) || process.env.NODE_ENV === 'development') {
     console.log(s); // eslint-disable-line
   }
 };
@@ -271,15 +271,15 @@ Utils.log = function (s) {
 // see http://stackoverflow.com/questions/8051975/access-object-child-properties-using-a-dot-notation-string
 Utils.getNestedProperty = function (obj, desc) {
   var arr = desc.split('.');
-  while(arr.length && (obj = obj[arr.shift()]));
+  while (arr.length && (obj = obj[arr.shift()]));
   return obj;
 };
 
 // see http://stackoverflow.com/a/14058408/649299
 _.mixin({
-  compactObject : function(object) {
+  compactObject: function (object) {
     var clone = _.clone(object);
-    _.each(clone, function(value, key) {
+    _.each(clone, function (value, key) {
       /*
         
         Remove a value if:
@@ -295,7 +295,7 @@ _.mixin({
         return;
       }
 
-      if(value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0)) {
+      if (value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0)) {
         delete clone[key];
       }
     });
@@ -312,7 +312,7 @@ Utils.getFieldLabel = (fieldName, collection) => {
 Utils.getLogoUrl = () => {
   const logoUrl = getSetting('logoUrl');
   if (logoUrl) {
-    const prefix = Utils.getSiteUrl().slice(0,-1);
+    const prefix = Utils.getSiteUrl().slice(0, -1);
     // the logo may be hosted on another website
     return logoUrl.indexOf('://') > -1 ? logoUrl : prefix + logoUrl;
   }
@@ -344,7 +344,7 @@ Utils.findIndex = (array, predicate) => {
 };
 
 // adapted from http://stackoverflow.com/a/22072374/649299
-Utils.unflatten = function(array, options, parent, level=0, tree){
+Utils.unflatten = function (array, options, parent, level = 0, tree) {
 
   const {
     idProperty = '_id',
@@ -395,10 +395,10 @@ Utils.stripTelescopeNamespace = (schema) => {
   const schemaKeys = Object.keys(schema);
 
   // remove any field beginning by telescope: .telescope, .telescope.upvotedPosts.$, ...
-  const filteredSchemaKeys = schemaKeys.filter(key => key.slice(0,9) !== 'telescope');
+  const filteredSchemaKeys = schemaKeys.filter(key => key.slice(0, 9) !== 'telescope');
 
   // replace the previous schema by an object based on this filteredSchemaKeys
-  return filteredSchemaKeys.reduce((sch, key) => ({...sch, [key]: schema[key]}), {});
+  return filteredSchemaKeys.reduce((sch, key) => ({ ...sch, [key]: schema[key] }), {});
 };
 
 /**
@@ -406,7 +406,7 @@ Utils.stripTelescopeNamespace = (schema) => {
  * @param {Array} fieldsArray
  */
 Utils.arrayToFields = (fieldsArray) => {
-  return _.object(fieldsArray, _.map(fieldsArray, function () {return true;}));
+  return _.object(fieldsArray, _.map(fieldsArray, function () { return true; }));
 };
 
 /**
@@ -445,7 +445,7 @@ Utils.convertDates = (collection, listOrDocument) => {
 
 Utils.encodeIntlError = error => typeof error !== 'object' ? error : JSON.stringify(error);
 
-Utils.decodeIntlError = (error, options = {stripped: false}) => {
+Utils.decodeIntlError = (error, options = { stripped: false }) => {
   try {
     // do we get the error as a string or as an error object?
     let strippedError = typeof error === 'string' ? error : error.message;
@@ -471,12 +471,12 @@ Utils.decodeIntlError = (error, options = {stripped: false}) => {
     // check if the error has at least an 'id' expected by react-intl
     if (!parsedError.id) {
       console.error('[Undecodable error]', error); // eslint-disable-line
-      return {id: 'app.something_bad_happened', value: '[undecodable error]'};
+      return { id: 'app.something_bad_happened', value: '[undecodable error]' };
     }
 
     // return the parsed error
     return parsedError;
-  } catch(__) {
+  } catch (__) {
     // the error is not internationalizable
     return error;
   }
@@ -505,7 +505,7 @@ Utils.getRoutePath = routeName => {
   return Routes[routeName] && Routes[routeName].path;
 };
 
-String.prototype.replaceAll = function(search, replacement) {
+String.prototype.replaceAll = function (search, replacement) {
   var target = this;
   return target.replace(new RegExp(search, 'g'), replacement);
 };
@@ -522,8 +522,8 @@ Utils.pluralize = s => {
 };
 
 Utils.removeProperty = (obj, propertyName) => {
-  for(const prop in obj) {
-    if (prop === propertyName){
+  for (const prop in obj) {
+    if (prop === propertyName) {
       delete obj[prop];
     } else if (typeof obj[prop] === 'object') {
       Utils.removeProperty(obj[prop], propertyName);

@@ -22,13 +22,13 @@ if (Meteor.isPackageTest) {
 
 Meteor.startup(() => {
   // note: route defined here because it "shouldn't be removable"
-  addRoute({name:'app.notfound', path:'*', componentName: 'Error404'});
+  addRoute({ name: 'app.notfound', path: '*', componentName: 'Error404' });
 
   // init the application components and routes, including components & routes from 3rd-party packages
   initializeFragments();
   populateComponentsApp();
   populateRoutesApp();
-  
+
   const indexRoute = _.filter(Routes, route => route.path === '/')[0];
   const childRoutes = _.reject(Routes, route => route.path === '/');
 
@@ -56,7 +56,7 @@ Meteor.startup(() => {
       store.reload();
       store.dispatch({ type: '@@nova/INIT' }); // the first dispatch will generate a newDispatch function from middleware
       const app = runCallbacks('router.server.wrapper', appGenerator(), { req, res, store, apolloClient });
-      const locale = getHeaderLocale(req.headers );
+      const locale = getHeaderLocale(req.headers);
       const appWithLocale = React.cloneElement(app, { locale });
       // TODO: currently locale is passed through cookies as a hack because it's not available as props; fix this
       req.universalCookies.cookies.locale = locale;

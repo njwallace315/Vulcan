@@ -122,7 +122,7 @@ const createApolloServer = (givenOptions = {}, givenConfig = {}) => {
 
   // cookies
   graphQLServer.use(cookiesMiddleware());
-  
+
   // compression
   graphQLServer.use(compression());
 
@@ -159,7 +159,7 @@ const createApolloServer = (givenOptions = {}, givenConfig = {}) => {
     // console.log('// apollo_server.js req.renderContext');
     // console.log(req.renderContext);
     // console.log('\n\n');
-    
+
     // Get the token from the header
     if (req.headers.authorization) {
       const token = req.headers.authorization;
@@ -186,7 +186,7 @@ const createApolloServer = (givenOptions = {}, givenConfig = {}) => {
         }
       }
     }
-    
+
     //add the headers to the context
     options.context.headers = req.headers;
 
@@ -256,7 +256,7 @@ ${GraphQLSchema.queries.map(q => (
 ${GraphQLSchema.mutations.length > 0 ? `type Mutation {
 
 ${GraphQLSchema.mutations.map(m => (
-`${m.description ? `  # ${m.description}
+      `${m.description ? `  # ${m.description}
 ` : ''}  ${m.mutation}
 `)).join('\n')}
 }

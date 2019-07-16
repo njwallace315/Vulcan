@@ -10,8 +10,8 @@ import isEmpty from 'lodash/isEmpty';
 
 const defaultOptions = { create: true, update: true, upsert: true, delete: true };
 
-export function getDefaultMutations (options) {
-  
+export function getDefaultMutations(options) {
+
   let typeName, collectionName, mutationOptions;
   if (typeof arguments[0] === 'object') {
     // new single-argument API
@@ -24,7 +24,7 @@ export function getDefaultMutations (options) {
     typeName = getTypeName(collectionName);
     mutationOptions = { ...defaultOptions, ...arguments[1] };
   }
-  
+
   // register callbacks for documentation purposes
   registerCollectionCallbacks(typeName, mutationOptions);
 
@@ -103,7 +103,7 @@ export function getDefaultMutations (options) {
 
         // get entire unmodified document from database
         const document = await Connectors.get(collection, selector);
-  
+
         if (!document) {
           throw new Error(`Could not find document to update for selector: ${JSON.stringify(selector)}`);
         }
@@ -163,7 +163,7 @@ export function getDefaultMutations (options) {
         // OpenCRUD backwards compatibility
         return Users.owns(user, document)
           ? Users.canDo(user, [`${typeName.toLowerCase()}.delete.own`, `${collectionName.toLowerCase()}.remove.own`])
-          : Users.canDo(user, [`${typeName.toLowerCase()}.delete.all`,  `${collectionName.toLowerCase()}.remove.all`]);
+          : Users.canDo(user, [`${typeName.toLowerCase()}.delete.all`, `${collectionName.toLowerCase()}.remove.all`]);
       },
 
       async mutation(root, { selector }, context) {
@@ -175,7 +175,7 @@ export function getDefaultMutations (options) {
         }
 
         const document = await Connectors.get(collection, selector);
-          
+
         if (!document) {
           throw new Error(`Could not find document to delete for selector: ${JSON.stringify(selector)}`);
         }
@@ -212,7 +212,7 @@ const registerCollectionCallbacks = (typeName, options) => {
         { document: 'The document being inserted' },
         { currentUser: 'The current user' },
         { collection: 'The collection the document belongs to' },
-        { context: 'The context of the mutation'},
+        { context: 'The context of the mutation' },
       ],
       runs: 'sync',
       returns: 'document',
@@ -255,7 +255,7 @@ const registerCollectionCallbacks = (typeName, options) => {
         { data: 'The client data' },
         { currentUser: 'The current user' },
         { collection: 'The collection the document belongs to' },
-        { context: 'The context of the mutation'},
+        { context: 'The context of the mutation' },
       ],
       runs: 'sync',
       returns: 'modifier',
@@ -303,8 +303,8 @@ const registerCollectionCallbacks = (typeName, options) => {
       properties: [
         { currentUser: 'The current user' },
         { document: 'The document being removed' },
-        { collection: 'The collection the document belongs to'},
-        { context: 'The context of this mutation'}
+        { collection: 'The collection the document belongs to' },
+        { context: 'The context of this mutation' }
       ],
       runs: 'sync',
       returns: 'document',
