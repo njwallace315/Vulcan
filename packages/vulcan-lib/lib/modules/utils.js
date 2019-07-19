@@ -28,8 +28,11 @@ export const Utils = {};
  * @summary Convert a camelCase string to dash-separated string
  * @param {String} str
  */
-Utils.camelToDash = function (str) {
-  return str.replace(/\W+/g, '-').replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
+Utils.camelToDash = function(str) {
+  return str
+    .replace(/\W+/g, '-')
+    .replace(/([a-z\d])([A-Z])/g, '$1-$2')
+    .toLowerCase();
 };
 
 /**
@@ -37,15 +40,17 @@ Utils.camelToDash = function (str) {
  * See http://stackoverflow.com/questions/4149276/javascript-camelcase-to-regular-form
  * @param {String} str
  */
-Utils.camelToSpaces = function (str) {
-  return str.replace(/([A-Z])/g, ' $1').replace(/^./, function (str) { return str.toUpperCase(); });
+Utils.camelToSpaces = function(str) {
+  return str.replace(/([A-Z])/g, ' $1').replace(/^./, function(str) {
+    return str.toUpperCase();
+  });
 };
 
 /**
  * @summary Convert an underscore-separated string to dash-separated string
  * @param {String} str
  */
-Utils.underscoreToDash = function (str) {
+Utils.underscoreToDash = function(str) {
   return str.replace('_', '-');
 };
 
@@ -53,15 +58,17 @@ Utils.underscoreToDash = function (str) {
  * @summary Convert a dash separated string to camelCase.
  * @param {String} str
  */
-Utils.dashToCamel = function (str) {
-  return str.replace(/(\-[a-z])/g, function ($1) { return $1.toUpperCase().replace('-', ''); });
+Utils.dashToCamel = function(str) {
+  return str.replace(/(\-[a-z])/g, function($1) {
+    return $1.toUpperCase().replace('-', '');
+  });
 };
 
 /**
  * @summary Convert a string to camelCase and remove spaces.
  * @param {String} str
  */
-Utils.camelCaseify = function (str) {
+Utils.camelCaseify = function(str) {
   str = this.dashToCamel(str.replace(' ', '-'));
   str = str.slice(0, 1).toLowerCase() + str.slice(1);
   return str;
@@ -72,14 +79,11 @@ Utils.camelCaseify = function (str) {
  * @param {String} s - Sentence to trim.
  * @param {Number} numWords - Number of words to trim sentence to.
  */
-Utils.trimWords = function (s, numWords) {
-
-  if (!s)
-    return s;
+Utils.trimWords = function(s, numWords) {
+  if (!s) return s;
 
   var expString = s.split(/\s+/, numWords);
-  if (expString.length >= numWords)
-    return expString.join(' ') + '…';
+  if (expString.length >= numWords) return expString.join(' ') + '…';
   return s;
 };
 
@@ -87,7 +91,7 @@ Utils.trimWords = function (s, numWords) {
  * @summary Trim a block of HTML code to get a clean text excerpt
  * @param {String} html - HTML to trim.
  */
-Utils.trimHTML = function (html, numWords) {
+Utils.trimHTML = function(html, numWords) {
   var text = Utils.stripHTML(html);
   return Utils.trimWords(text, numWords);
 };
@@ -96,25 +100,27 @@ Utils.trimHTML = function (html, numWords) {
  * @summary Capitalize a string.
  * @param {String} str
  */
-Utils.capitalize = function (str) {
+Utils.capitalize = function(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-Utils.t = function (message) {
+Utils.t = function(message) {
   var d = new Date();
-  console.log("### " + message + " rendered at " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds()); // eslint-disable-line
+  console.log(
+    '### ' + message + ' rendered at ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds()
+  ); // eslint-disable-line
 };
 
-Utils.nl2br = function (str) {
+Utils.nl2br = function(str) {
   var breakTag = '<br />';
   return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
 };
 
-Utils.scrollPageTo = function (selector) {
+Utils.scrollPageTo = function(selector) {
   $('body').scrollTop($(selector).offset().top);
 };
 
-Utils.scrollIntoView = function (selector) {
+Utils.scrollIntoView = function(selector) {
   if (!document) return;
 
   const element = document.querySelector(selector);
@@ -123,7 +129,7 @@ Utils.scrollIntoView = function (selector) {
   }
 };
 
-Utils.getDateRange = function (pageNumber) {
+Utils.getDateRange = function(pageNumber) {
   var now = moment(new Date());
   var dayToDisplay = now.subtract(pageNumber - 1, 'days');
   var range = {};
@@ -141,7 +147,7 @@ Utils.getDateRange = function (pageNumber) {
 /**
  * @summary Returns the user defined site URL or Meteor.absoluteUrl. Add trailing '/' if missing
  */
-Utils.getSiteUrl = function () {
+Utils.getSiteUrl = function() {
   let url = getSetting('siteUrl', Meteor.absoluteUrl());
   if (url.slice(-1) !== '/') {
     url += '/';
@@ -153,13 +159,13 @@ Utils.getSiteUrl = function () {
  * @summary The global namespace for Vulcan utils.
  * @param {String} url - the URL to redirect
  */
-Utils.getOutgoingUrl = function (url) {
+Utils.getOutgoingUrl = function(url) {
   return Utils.getSiteUrl() + 'out?url=' + encodeURIComponent(url);
 };
 
-Utils.slugify = function (s) {
+Utils.slugify = function(s) {
   var slug = getSlug(s, {
-    truncate: 60
+    truncate: 60,
   });
 
   // can't have posts with an "edit" slug
@@ -169,7 +175,7 @@ Utils.slugify = function (s) {
 
   return slug;
 };
-Utils.getUnusedSlug = function (collection, slug) {
+Utils.getUnusedSlug = function(collection, slug) {
   let suffix = '';
   let index = 0;
 
@@ -186,7 +192,7 @@ Utils.getUnusedSlug = function (collection, slug) {
 // Utils.getUnusedSlug = async function (collection, slug) {
 //   let suffix = '';
 //   let index = 0;
-// 
+//
 //   const slugRegex = new RegExp('^' + slug + '-[0-9]+$');
 //   // get all the slugs matching slug or slug-123 in that collection
 //   const results = await collection.find( { slug: { $in: [slug, slugRegex] } }, { fields: { slug: 1, _id: 0 } });
@@ -199,15 +205,15 @@ Utils.getUnusedSlug = function (collection, slug) {
 //   return slug + suffix;
 // };
 
-Utils.getUnusedSlugByCollectionName = function (collectionName, slug) {
+Utils.getUnusedSlugByCollectionName = function(collectionName, slug) {
   return Utils.getUnusedSlug(getCollection(collectionName), slug);
 };
 
-Utils.getShortUrl = function (post) {
+Utils.getShortUrl = function(post) {
   return post.shortUrl || post.url;
 };
 
-Utils.getDomain = function (url) {
+Utils.getDomain = function(url) {
   try {
     return urlObject.parse(url).hostname.replace('www.', '');
   } catch (error) {
@@ -216,7 +222,7 @@ Utils.getDomain = function (url) {
 };
 
 // add http: if missing
-Utils.addHttp = function (url) {
+Utils.addHttp = function(url) {
   try {
     if (url.substring(0, 5) !== 'http:' && url.substring(0, 6) !== 'https:') {
       url = 'http:' + url;
@@ -231,25 +237,25 @@ Utils.addHttp = function (url) {
 // String Helper Functions //
 /////////////////////////////
 
-Utils.cleanUp = function (s) {
+Utils.cleanUp = function(s) {
   return this.stripHTML(s);
 };
 
-Utils.sanitize = function (s) {
+Utils.sanitize = function(s) {
   return s;
 };
 
-Utils.stripHTML = function (s) {
+Utils.stripHTML = function(s) {
   return s.replace(/<(?:.|\n)*?>/gm, '');
 };
 
-Utils.stripMarkdown = function (s) {
+Utils.stripMarkdown = function(s) {
   var htmlBody = marked(s);
   return Utils.stripHTML(htmlBody);
 };
 
 // http://stackoverflow.com/questions/2631001/javascript-test-for-existence-of-nested-object-key
-Utils.checkNested = function (obj /*, level1, level2, ... levelN*/) {
+Utils.checkNested = function(obj /*, level1, level2, ... levelN*/) {
   var args = Array.prototype.slice.call(arguments);
   obj = args.shift();
 
@@ -262,14 +268,14 @@ Utils.checkNested = function (obj /*, level1, level2, ... levelN*/) {
   return true;
 };
 
-Utils.log = function (s) {
+Utils.log = function(s) {
   if (getSetting('debug', false) || process.env.NODE_ENV === 'development') {
     console.log(s); // eslint-disable-line
   }
 };
 
 // see http://stackoverflow.com/questions/8051975/access-object-child-properties-using-a-dot-notation-string
-Utils.getNestedProperty = function (obj, desc) {
+Utils.getNestedProperty = function(obj, desc) {
   var arr = desc.split('.');
   while (arr.length && (obj = obj[arr.shift()]));
   return obj;
@@ -277,9 +283,9 @@ Utils.getNestedProperty = function (obj, desc) {
 
 // see http://stackoverflow.com/a/14058408/649299
 _.mixin({
-  compactObject: function (object) {
+  compactObject: function(object) {
     var clone = _.clone(object);
-    _.each(clone, function (value, key) {
+    _.each(clone, function(value, key) {
       /*
         
         Remove a value if:
@@ -295,12 +301,17 @@ _.mixin({
         return;
       }
 
-      if (value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0)) {
+      if (
+        value === undefined ||
+        value === null ||
+        value === '' ||
+        (Array.isArray(value) && value.length === 0)
+      ) {
         delete clone[key];
       }
     });
     return clone;
-  }
+  },
 });
 
 Utils.getFieldLabel = (fieldName, collection) => {
@@ -319,7 +330,7 @@ Utils.getLogoUrl = () => {
 };
 
 // note(apollo): get collection's name from __typename given by react-apollo
-Utils.getCollectionNameFromTypename = (type) => {
+Utils.getCollectionNameFromTypename = type => {
   if (type.indexOf('Post') > -1) {
     return 'posts';
   } else if (type.indexOf('Cat') > -1) {
@@ -344,12 +355,11 @@ Utils.findIndex = (array, predicate) => {
 };
 
 // adapted from http://stackoverflow.com/a/22072374/649299
-Utils.unflatten = function (array, options, parent, level = 0, tree) {
-
+Utils.unflatten = function(array, options, parent, level = 0, tree) {
   const {
     idProperty = '_id',
     parentIdProperty = 'parentId',
-    childrenProperty = 'childrenResults'
+    childrenProperty = 'childrenResults',
   } = options;
 
   level++;
@@ -370,7 +380,6 @@ Utils.unflatten = function (array, options, parent, level = 0, tree) {
 
   // if we found children, we keep on iterating
   if (!!children.length) {
-
     if (typeof parent === 'undefined') {
       // if we're at the root, then the tree consist of all root nodes
       tree = children;
@@ -390,7 +399,7 @@ Utils.unflatten = function (array, options, parent, level = 0, tree) {
 };
 
 // remove the telescope object from a schema and duplicate it at the root
-Utils.stripTelescopeNamespace = (schema) => {
+Utils.stripTelescopeNamespace = schema => {
   // grab the users schema keys
   const schemaKeys = Object.keys(schema);
 
@@ -405,18 +414,22 @@ Utils.stripTelescopeNamespace = (schema) => {
  * Convert an array of field names into a Mongo fields specifier
  * @param {Array} fieldsArray
  */
-Utils.arrayToFields = (fieldsArray) => {
-  return _.object(fieldsArray, _.map(fieldsArray, function () { return true; }));
+Utils.arrayToFields = fieldsArray => {
+  return _.object(
+    fieldsArray,
+    _.map(fieldsArray, function() {
+      return true;
+    })
+  );
 };
 
 /**
  * Get the display name of a React component
  * @param {React Component} WrappedComponent
  */
-Utils.getComponentDisplayName = (WrappedComponent) => {
+Utils.getComponentDisplayName = WrappedComponent => {
   return WrappedComponent.displayName || WrappedComponent.name || 'Component';
 };
-
 
 /**
  * Take a collection and a list of documents, and convert all their date fields to date objects
@@ -443,7 +456,7 @@ Utils.convertDates = (collection, listOrDocument) => {
   return Array.isArray(listOrDocument) ? convertedList : convertedList[0];
 };
 
-Utils.encodeIntlError = error => typeof error !== 'object' ? error : JSON.stringify(error);
+Utils.encodeIntlError = error => (typeof error !== 'object' ? error : JSON.stringify(error));
 
 Utils.decodeIntlError = (error, options = { stripped: false }) => {
   try {
@@ -482,15 +495,23 @@ Utils.decodeIntlError = (error, options = { stripped: false }) => {
   }
 };
 
-Utils.findWhere = (array, criteria) => array.find(item => Object.keys(criteria).every(key => item[key] === criteria[key]));
+Utils.findWhere = (array, criteria) =>
+  array.find(item => Object.keys(criteria).every(key => item[key] === criteria[key]));
 
 Utils.defineName = (o, name) => {
   Object.defineProperty(o, 'name', { value: name });
   return o;
 };
 
-Utils.performCheck = (operation, user, checkedObject, context, documentId, operationName, collectionName) => {
-
+Utils.performCheck = (
+  operation,
+  user,
+  checkedObject,
+  context,
+  documentId,
+  operationName,
+  collectionName
+) => {
   if (!checkedObject) {
     throwError({ id: 'app.document_not_found', data: { documentId, operationName } });
   }
@@ -498,14 +519,13 @@ Utils.performCheck = (operation, user, checkedObject, context, documentId, opera
   if (!operation(user, checkedObject, context)) {
     throwError({ id: 'app.operation_not_allowed', data: { documentId, operationName } });
   }
-
 };
 
 Utils.getRoutePath = routeName => {
   return Routes[routeName] && Routes[routeName].path;
 };
 
-String.prototype.replaceAll = function (search, replacement) {
+String.prototype.replaceAll = function(search, replacement) {
   var target = this;
   return target.replace(new RegExp(search, 'g'), replacement);
 };
@@ -513,11 +533,8 @@ String.prototype.replaceAll = function (search, replacement) {
 Utils.isPromise = value => isFunction(get(value, 'then'));
 
 Utils.pluralize = s => {
-  const plural = s.slice(-1) === 'y' ?
-    `${s.slice(0, -1)}ies` :
-    s.slice(-1) === 's' ?
-      `${s}es` :
-      `${s}s`;
+  const plural =
+    s.slice(-1) === 'y' ? `${s.slice(0, -1)}ies` : s.slice(-1) === 's' ? `${s}es` : `${s}s`;
   return plural;
 };
 

@@ -5,7 +5,7 @@ Package.describe({
   git: 'https://github.com/VulcanJS/Vulcan.git',
 });
 
-Package.onUse(function (api) {
+Package.onUse(function(api) {
   api.versionsFrom('1.6.1');
 
   // note: if used, accounts-base should be loaded before vulcan:lib
@@ -59,7 +59,7 @@ Package.onUse(function (api) {
   api.mainModule('lib/client/main.js', 'client');
 });
 
-Package.onTest(function (api) {
+Package.onTest(function(api) {
   api.use(['ecmascript', 'meteortesting:mocha']);
   api.mainModule('./test/index.js');
 });

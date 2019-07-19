@@ -27,7 +27,12 @@ import { getHeaderLocale } from './intl.js';
 export let executableSchema;
 
 registerSetting('apolloEngine.logLevel', 'INFO', 'Log level (one of INFO, DEBUG, WARN, ERROR');
-registerSetting('apolloServer.tracing', Meteor.isDevelopment, 'Tracing by Apollo. Default is true on development and false on prod', true);
+registerSetting(
+  'apolloServer.tracing',
+  Meteor.isDevelopment,
+  'Tracing by Apollo. Default is true on development and false on prod',
+  true
+);
 
 // see https://github.com/apollographql/apollo-cache-control
 const engineApiKey = getSetting('apolloEngine.apiKey');
@@ -41,13 +46,13 @@ const engineConfig = {
   //     }
   //   }
   // ],
-  'stores': [
+  stores: [
     {
-      'name': 'vulcanCache',
-      'inMemory': {
-        'cacheSize': 20000000
-      }
-    }
+      name: 'vulcanCache',
+      inMemory: {
+        cacheSize: 20000000,
+      },
+    },
   ],
   // "sessionAuth": {
   //   "store": "embeddedCache",
@@ -63,17 +68,17 @@ const engineConfig = {
   //     }
   //   }
   // ],
-  'queryCache': {
-    'publicFullQueryStore': 'vulcanCache',
-    'privateFullQueryStore': 'vulcanCache'
+  queryCache: {
+    publicFullQueryStore: 'vulcanCache',
+    privateFullQueryStore: 'vulcanCache',
   },
   // "reporting": {
   //   "endpointUrl": "https://engine-report.apollographql.com",
   //   "debugReports": true
   // },
-  'logging': {
-    'level': engineLogLevel
-  }
+  logging: {
+    level: engineLogLevel,
+  },
 };
 let engine;
 if (engineApiKey) {
@@ -90,7 +95,7 @@ const defaultConfig = {
   graphiqlOptions: {
     passHeader: "'Authorization': localStorage['Meteor.loginToken']", // eslint-disable-line quotes
   },
-  configServer: (graphQLServer) => { },
+  configServer: graphQLServer => {},
 };
 
 const defaultOptions = {
@@ -127,101 +132,109 @@ const createApolloServer = (givenOptions = {}, givenConfig = {}) => {
   graphQLServer.use(compression());
 
   // GraphQL endpoint
-  graphQLServer.use(config.path, bodyParser.json({ limit: getSetting('apolloServer.jsonParserOptions.limit') }), graphqlExpress(async (req) => {
-    let options;
-    let user = null;
+  graphQLServer.use(
+    config.path,
+    bodyParser.json({ limit: getSetting('apolloServer.jsonParserOptions.limit') }),
+    graphqlExpress(async req => {
+      let options;
+      let user = null;
 
-    if (typeof givenOptions === 'function') {
-      options = givenOptions(req);
-    } else {
-      options = givenOptions;
-    }
+      if (typeof givenOptions === 'function') {
+        options = givenOptions(req);
+      } else {
+        options = givenOptions;
+      }
 
-    // Merge in the defaults
-    options = { ...defaultOptions, ...options };
-    if (options.context) {
-      // don't mutate the context provided in options
-      options.context = { ...options.context };
-    } else {
-      options.context = {};
-    }
+      // Merge in the defaults
+      options = { ...defaultOptions, ...options };
+      if (options.context) {
+        // don't mutate the context provided in options
+        options.context = { ...options.context };
+      } else {
+        options.context = {};
+      }
 
-    // enable tracing and caching
-    options.tracing = getSetting('apolloServer.tracing', Meteor.isDevelopment);
-    options.cacheControl = true;
+      // enable tracing and caching
+      options.tracing = getSetting('apolloServer.tracing', Meteor.isDevelopment);
+      options.cacheControl = true;
 
-    // note: custom default resolver doesn't currently work
-    // see https://github.com/apollographql/apollo-server/issues/716
-    // options.fieldResolver = (source, args, context, info) => {
-    //   return source[info.fieldName];
-    // }
+      // note: custom default resolver doesn't currently work
+      // see https://github.com/apollographql/apollo-server/issues/716
+      // options.fieldResolver = (source, args, context, info) => {
+      //   return source[info.fieldName];
+      // }
 
-    // console.log('// apollo_server.js req.renderContext');
-    // console.log(req.renderContext);
-    // console.log('\n\n');
+      // console.log('// apollo_server.js req.renderContext');
+      // console.log(req.renderContext);
+      // console.log('\n\n');
 
-    // Get the token from the header
-    if (req.headers.authorization) {
-      const token = req.headers.authorization;
-      check(token, String);
-      const hashedToken = _hashLoginToken(token);
+      // Get the token from the header
+      if (req.headers.authorization) {
+        const token = req.headers.authorization;
+        check(token, String);
+        const hashedToken = _hashLoginToken(token);
 
-      // Get the user from the database
-      user = await Meteor.users.findOne(
-        { 'services.resume.loginTokens.hashedToken': hashedToken },
-      );
+        // Get the user from the database
+        user = await Meteor.users.findOne({
+          'services.resume.loginTokens.hashedToken': hashedToken,
+        });
 
-      if (user) {
+        if (user) {
+          // identify user to any server-side analytics providers
+          runCallbacks('events.identify', user);
 
-        // identify user to any server-side analytics providers
-        runCallbacks('events.identify', user);
+          const loginToken = Utils.findWhere(user.services.resume.loginTokens, { hashedToken });
+          const expiresAt = _tokenExpiration(loginToken.when);
+          const isExpired = expiresAt < new Date();
 
-        const loginToken = Utils.findWhere(user.services.resume.loginTokens, { hashedToken });
-        const expiresAt = _tokenExpiration(loginToken.when);
-        const isExpired = expiresAt < new Date();
-
-        if (!isExpired) {
-          options.context.userId = user._id;
-          options.context.currentUser = user;
+          if (!isExpired) {
+            options.context.userId = user._id;
+            options.context.currentUser = user;
+          }
         }
       }
-    }
 
-    //add the headers to the context
-    options.context.headers = req.headers;
+      //add the headers to the context
+      options.context.headers = req.headers;
 
+      // merge with custom context
+      options.context = deepmerge(options.context, GraphQLSchema.context);
 
-    // merge with custom context
-    options.context = deepmerge(options.context, GraphQLSchema.context);
+      // go over context and add Dataloader to each collection
+      Collections.forEach(collection => {
+        options.context[collection.options.collectionName].loader = new DataLoader(
+          ids => findByIds(collection, ids, options.context),
+          { cache: true }
+        );
+      });
 
-    // go over context and add Dataloader to each collection
-    Collections.forEach(collection => {
-      options.context[collection.options.collectionName].loader = new DataLoader(ids => findByIds(collection, ids, options.context), { cache: true });
-    });
+      // look for headers either in renderContext (SSR) or req (normal request to the endpoint)
+      const headers = req.renderContext.originalHeaders || req.headers;
 
-    // look for headers either in renderContext (SSR) or req (normal request to the endpoint)
-    const headers = req.renderContext.originalHeaders || req.headers;
+      options.context.locale = getHeaderLocale(headers, user && user.locale);
 
-    options.context.locale = getHeaderLocale(headers, user && user.locale);
+      if (headers.apikey && headers.apikey === getSetting('vulcan.apiKey')) {
+        options.context.currentUser = { isAdmin: true, isApiUser: true };
+      }
+      // console.log('// apollo_server.js isSSR?', !!req.renderContext.originalHeaders ? 'yes' : 'no');
+      // console.log('// apollo_server.js headers:');
+      // console.log(headers);
+      // console.log('// apollo_server.js final locale: ', options.context.locale);
+      // console.log('\n\n');
 
-    if (headers.apikey && (headers.apikey === getSetting('vulcan.apiKey'))) {
-      options.context.currentUser = { isAdmin: true, isApiUser: true };
-    }
-    // console.log('// apollo_server.js isSSR?', !!req.renderContext.originalHeaders ? 'yes' : 'no');
-    // console.log('// apollo_server.js headers:');
-    // console.log(headers);
-    // console.log('// apollo_server.js final locale: ', options.context.locale);
-    // console.log('\n\n');
+      // add error formatting from apollo-errors
+      options.formatError = formatError;
 
-    // add error formatting from apollo-errors
-    options.formatError = formatError;
-
-    return options;
-  }));
+      return options;
+    })
+  );
 
   // Start GraphiQL if enabled
   if (config.graphiql) {
-    graphQLServer.use(config.graphiqlPath, graphiqlExpress({ ...config.graphiqlOptions, endpointURL: config.path }));
+    graphQLServer.use(
+      config.graphiqlPath,
+      graphiqlExpress({ ...config.graphiqlOptions, endpointURL: config.path })
+    );
   }
 
   // This binds the specified paths to the Express server running Apollo + GraphiQL
@@ -233,11 +246,11 @@ const createApolloServer = (givenOptions = {}, givenConfig = {}) => {
 
 // createApolloServer when server startup
 Meteor.startup(() => {
-
   runCallbacks('graphql.init.before');
 
   // typeDefs
-  const generateTypeDefs = () => [`
+  const generateTypeDefs = () => [
+    `
 scalar JSON
 scalar Date
 
@@ -247,21 +260,42 @@ ${GraphQLSchema.getCollectionsSchemas()}
 
 type Query {
 
-${GraphQLSchema.queries.map(q => (
-    `${q.description ? `  # ${q.description}
-` : ''}  ${q.query}
-  `)).join('\n')}
+${GraphQLSchema.queries
+      .map(
+        q =>
+          `${
+            q.description
+              ? `  # ${q.description}
+`
+              : ''
+          }  ${q.query}
+  `
+      )
+      .join('\n')}
 }
 
-${GraphQLSchema.mutations.length > 0 ? `type Mutation {
+${
+      GraphQLSchema.mutations.length > 0
+        ? `type Mutation {
 
-${GraphQLSchema.mutations.map(m => (
-      `${m.description ? `  # ${m.description}
-` : ''}  ${m.mutation}
-`)).join('\n')}
+${GraphQLSchema.mutations
+            .map(
+              m =>
+                `${
+                  m.description
+                    ? `  # ${m.description}
+`
+                    : ''
+                }  ${m.mutation}
+`
+            )
+            .join('\n')}
 }
-` : ''}
-`];
+`
+        : ''
+    }
+`,
+  ];
 
   const typeDefs = generateTypeDefs();
 

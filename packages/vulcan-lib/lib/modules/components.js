@@ -173,10 +173,10 @@ export function replaceComponent(name, newComponent, ...newHocs) {
     // eslint-disable-next-line no-console
     console.warn(
       `Trying to replace non-registered component ${name}. The component is ` +
-      'being registered. If you were trying to replace a component defined by ' +
-      "another package, make sure that you haven't misspelled the name. Check " +
-      'also if the original component is still being registered or that it ' +
-      "hasn't been renamed."
+        'being registered. If you were trying to replace a component defined by ' +
+        "another package, make sure that you haven't misspelled the name. Check " +
+        'also if the original component is still being registered or that it ' +
+        "hasn't been renamed."
     );
   }
 

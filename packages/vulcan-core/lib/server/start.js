@@ -8,7 +8,7 @@ if (getSetting('mailUrl')) {
   process.env.MAIL_URL = getSetting('mailUrl');
 }
 
-Meteor.startup(function () {
+Meteor.startup(function() {
   if (typeof SyncedCron !== 'undefined') {
     SyncedCron.start();
   }

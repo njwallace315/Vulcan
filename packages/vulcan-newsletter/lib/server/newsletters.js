@@ -2,7 +2,13 @@ import Users from 'meteor/vulcan:users';
 import VulcanEmail from 'meteor/vulcan:email';
 import { SyncedCron } from 'meteor/percolatestudio:synced-cron';
 import Newsletters from '../modules/collection.js';
-import { Utils, getSetting, registerSetting, runCallbacksAsync, Connectors } from 'meteor/vulcan:core';
+import {
+  Utils,
+  getSetting,
+  registerSetting,
+  runCallbacksAsync,
+  Connectors,
+} from 'meteor/vulcan:core';
 
 registerSetting('newsletter.provider', 'mailchimp', 'Newsletter provider');
 registerSetting('defaultEmail', null, 'Email newsletter confirmations will be sent to');
@@ -46,7 +52,9 @@ Newsletters.subscribeUser = async (user, confirm = false) => {
   console.log(`// Adding ${email} to ${provider} list…`);
   const result = Newsletters[provider].subscribe(email, confirm);
   // eslint-disable-next-line no-console
-  if (result) { console.log('-> added'); }
+  if (result) {
+    console.log('-> added');
+  }
   await Connectors.update(Users, user._id, { $set: { newsletter_subscribeToNewsletter: true } });
 };
 
@@ -59,15 +67,16 @@ Newsletters.subscribeEmail = (email, confirm = false) => {
   console.log(`// Adding ${email} to ${provider} list…`);
   const result = Newsletters[provider].subscribe(email, confirm);
   // eslint-disable-next-line no-console
-  if (result) { console.log('-> added'); }
+  if (result) {
+    console.log('-> added');
+  }
 };
-
 
 /**
  * @summary Unsubscribe a user from the newsletter
  * @param {Object} user
  */
-Newsletters.unsubscribeUser = async (user) => {
+Newsletters.unsubscribeUser = async user => {
   const email = Users.getEmail(user);
   if (!email) {
     throw 'User must have an email address';
@@ -83,7 +92,7 @@ Newsletters.unsubscribeUser = async (user) => {
  * @summary Unsubscribe an email from the newsletter
  * @param {String} email
  */
-Newsletters.unsubscribeEmail = (email) => {
+Newsletters.unsubscribeEmail = email => {
   // eslint-disable-next-line no-console
   console.log('// Removing "' + email + '" from list…');
   Newsletters[provider].unsubscribe(email);
@@ -95,7 +104,7 @@ Newsletters.unsubscribeEmail = (email) => {
  * @param {Array} posts
  */
 Newsletters.getSubject = posts => {
-  const subject = posts.map((post, index) => index > 0 ? `, ${post.title}` : post.title).join('');
+  const subject = posts.map((post, index) => (index > 0 ? `, ${post.title}` : post.title)).join('');
   return Utils.trimWords(subject, 15);
 };
 
@@ -236,14 +245,15 @@ Newsletters.getLast = () => {
  * @param {Boolean} isTest
  */
 Newsletters.send = async (isTest = false) => {
-
   const newsletterEmail = VulcanEmail.emails.newsletter;
-  const email = await VulcanEmail.build({ emailName: 'newsletter', variables: { terms: { view: 'newsletter' } } });
+  const email = await VulcanEmail.build({
+    emailName: 'newsletter',
+    variables: { terms: { view: 'newsletter' } },
+  });
   const { subject, html, data } = email;
   const text = VulcanEmail.generateTextVersion(html);
 
   if (newsletterEmail.isValid(data)) {
-
     // eslint-disable-next-line no-console
     console.log('// Sending newsletter…');
     // eslint-disable-next-line no-console
@@ -253,7 +263,6 @@ Newsletters.send = async (isTest = false) => {
 
     // if newsletter sending is successufl and this is not a test, mark posts as sent and log newsletter
     if (newsletter && !isTest) {
-
       runCallbacksAsync('newsletter.send.async', email);
 
       const createdAt = new Date();
@@ -271,23 +280,25 @@ Newsletters.send = async (isTest = false) => {
       const confirmationHtml = VulcanEmail.getTemplate('newsletterConfirmation')({
         time: createdAt.toString(),
         newsletterLink: newsletter.archive_url,
-        subject: subject
+        subject: subject,
       });
-      VulcanEmail.send(getSetting('defaultEmail'), 'Newsletter scheduled', VulcanEmail.buildTemplate(confirmationHtml));
-
+      VulcanEmail.send(
+        getSetting('defaultEmail'),
+        'Newsletter scheduled',
+        VulcanEmail.buildTemplate(confirmationHtml)
+      );
     }
-
   } else {
-
     // eslint-disable-next-line no-console
     console.log('No newsletter to schedule today…');
-
   }
 };
 
 Meteor.startup(() => {
   if (!Newsletters[provider]) {
     // eslint-disable-next-line no-console
-    console.log(`// Warning: please configure your settings for ${provider} support, or else disable the vulcan:newsletter package.`);
+    console.log(
+      `// Warning: please configure your settings for ${provider} support, or else disable the vulcan:newsletter package.`
+    );
   }
 });
